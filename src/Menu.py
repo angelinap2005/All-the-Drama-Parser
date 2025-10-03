@@ -1,3 +1,5 @@
+import ImportDrama
+
 def menu():
     print("Please select an option:")
     print("1. Import a drama from a text file.")
@@ -9,7 +11,7 @@ def menu():
     selection = input()
 
     if selection == "1":
-        return 1
+        ImportDrama.menu()
     elif selection == "2":
         return 2
     elif selection == "3":

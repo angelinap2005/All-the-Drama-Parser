@@ -1,3 +1,7 @@
+def menu():
+    file = select_drama()
+    import_drama(file)
+
 def select_drama():
     print("Please enter a drama:")
     selection = input()
