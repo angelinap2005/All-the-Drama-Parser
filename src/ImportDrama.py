@@ -2,13 +2,13 @@ def menu():
     file = select_drama()
     import_drama(file)
 
+
 def select_drama():
     print("Please enter a drama:")
     selection = input()
 
-    length = len(selection)
-    if length > 0:
-        if selection[:-length] is not ".txt":
+    if len(selection) > 0:
+        if not selection.endswith(".txt"):
             return None
         else:
             return selection
@@ -21,14 +21,12 @@ def import_drama(drama_file):
     if drama_file is None:
         return None
     else:
-        path = "files/" + drama_file
+        path = "C:/Users/angel/OneDrive - University of Strathclyde/Year 3/CS353/programmingProjects/PythonProject/coursework1/files/" + drama_file
 
-    if path is None:
+        if drama_file is not None:
+            print("Importing drama...")
+            with open(path, "r", encoding="utf-8") as file:
+                for line in file:
+                    drama.append(line.strip())
+            return drama
         return None
-
-    if drama_file is not None:
-        with open(drama_file, "r") as file:
-            for line in file:
-                drama.append(line.strip())
-        return drama
-    return None
