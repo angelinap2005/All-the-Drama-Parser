@@ -1,9 +1,13 @@
 import ImportDrama
 import GenerateReport
+import SaveReportToFile
+
 drama = []
+
 def menu():
     global drama
-    while True:  # Keep looping to show menu again
+    while True:
+        #keeps looping until user selects a valid option
         print("Please select an option:")
         print("1. Import a drama from a text file.")
         print("2. Print a summary report.")
@@ -17,10 +21,37 @@ def menu():
             drama = ImportDrama.menu()
         elif selection == "2":
             GenerateReport.menu(drama)
-            pass
         elif selection == "3":
-            # Handle option 3
-            pass
+            #list all available reports
+            available_reports = GenerateReport.get_available_reports()
+            if len(available_reports) == 0:
+                print("No reports available. Please generate a report first (option 2).")
+                continue
+
+            print("Available reports:")
+            for idx, title in enumerate(available_reports, 1):
+                print(f"{idx}. {title}")
+
+            print("Enter the number of the report you want to save (or type the exact title):")
+            user_input = input().strip()
+
+            #ensure the user input is a valid number or title
+            if user_input.isdigit():
+                report_idx = int(user_input) - 1
+                if 0 <= report_idx < len(available_reports):
+                    title = available_reports[report_idx]
+                else:
+                    print("Error: Invalid report number.")
+                    continue
+            else:
+                title = user_input
+
+            #try to find the report by title
+            report = GenerateReport.get_drama_report(title)
+            if report is None:
+                print(f"Error: No report found with title '{title}'.")
+            else:
+                SaveReportToFile.menu(report)
         elif selection == "4":
             # Handle option 4
             pass
