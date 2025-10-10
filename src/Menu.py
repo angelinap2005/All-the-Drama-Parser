@@ -29,6 +29,7 @@ def menu():
                 continue
 
             print("Available reports:")
+            #prints available reports for user to choose from
             for idx, title in enumerate(available_reports, 1):
                 print(f"{idx}. {title}")
 
