@@ -1,6 +1,7 @@
 import ImportDrama
 import GenerateReport
 import SaveReportToFile
+import ViewDetailsOfAct
 
 drama = []
 
@@ -54,7 +55,7 @@ def menu():
             else:
                 SaveReportToFile.menu(report)
         elif selection == "4":
-            # Handle option 4
+            ViewDetailsOfAct.menu(drama)
             pass
         elif selection == "5":
             # Handle option 5

@@ -9,7 +9,7 @@ def menu(temp_report):
 
 def create_report_file():
     global report
-    filename = input("Please enter a filename to save the report to: ")
+    filename = "summary_drama.txt"
     with open(filename, "w") as file:
         file.write("Title: " + report["title"] + "\n")
         file.write("Number of acts: " + str(report["num_acts"]) + "\n")
