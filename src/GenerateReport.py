@@ -1,6 +1,7 @@
+import Util
+
 drama = []
 drama_reports = {}
-
 
 def menu(dramaTemp):
     global drama
@@ -21,12 +22,13 @@ def check_file_loaded(dramaTemp):
 
 
 def generate_report():
+    global drama
     try:
         #in a try catch block to prevent errors from crashing the program
         #get title for readability
         title = get_drama_title()
         print("Title: " + title)
-        num_acts = find_number_of_acts()
+        num_acts = Util.find_number_of_acts(drama)
         num_scenes = find_number_of_scenes()
         print("Number of acts: " + str(num_acts))
         print("Number of scenes: " + str(num_scenes))
@@ -36,38 +38,13 @@ def generate_report():
             print(str(counter + 1) + ". " + list(top_20_words().keys())[counter] + " - " + str(
                 list(top_20_words().values())[counter]) + " time(s)")
         print("Character names: ")
-        characters = get_character_names()
+        characters = Util.get_character_names(drama)
         for character in characters:
             print("-- " + character)
         save_report(num_acts, num_scenes, top_20_words_list, characters)
     except IndexError:
         print("Error while generating report.")
         return
-
-
-def find_number_of_acts():
-    global drama
-    if drama is None:
-        print("No drama loaded.")
-        return 0
-    acts = 0
-    in_contents_section = False
-
-    #gets acts listed in first section of drama
-    for line in drama:
-        stripped_line = line.strip()
-
-        if stripped_line == "Contents":
-            in_contents_section = True
-            continue
-
-        if stripped_line == "Dramatis Personæ":
-            break
-        #counts all acts
-        if in_contents_section and stripped_line.startswith("ACT "):
-            acts += 1
-
-    return acts
 
 
 def find_number_of_scenes():
@@ -117,36 +94,6 @@ def top_20_words():
         top_words = dict(sorted(top_words.items(), key=lambda item: item[1], reverse=True))
 
     return top_words
-
-
-def get_character_names():
-    global drama
-    if drama is None or len(drama) == 0:
-        return []
-
-    characters = []
-    in_dramatis_section = False
-
-    for line in drama:
-        stripped_line = line.strip()
-
-        #checks for dramatis personae section
-        if "Dramatis Personæ" in stripped_line:
-            in_dramatis_section = True
-            continue
-        #stops when it reaches the end of the characters section
-        if stripped_line.startswith("SCENE:"):
-            break
-
-        if in_dramatis_section and len(stripped_line) > 0:
-            if not any(c.isupper() for c in stripped_line[:3]):
-                continue
-
-            if ',' in stripped_line:
-                name = stripped_line.split(',')[0].strip()
-                characters.append(name)
-
-    return characters
 
 
 def get_drama_title():
