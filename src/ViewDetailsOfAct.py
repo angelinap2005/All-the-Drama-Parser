@@ -28,9 +28,21 @@ def get_act_from_drama():
             for line in drama:
                 if line.startswith("ACT " + Util.convert_int_to_numerals(selection)):
                     pass
-            words, lines = count_utterance_words_in_act(selection)
+            words, lines, character_names_and_utterances = count_utterance_words_in_act(selection)
             print("Number of spoken words in act : " + str(words))
             print("Number of spoken lines in act : " + str(lines))
+            print("\n")
+            print("Character who speaks the most: " + str(max(character_names_and_utterances, key=character_names_and_utterances.get)))
+            print("Character who speaks the least: " + str(min(character_names_and_utterances, key=character_names_and_utterances.get)))
+            print("\n")
+            print("Scene names:")
+            scenes = get_scene_names(selection)
+            if scenes is not None:
+                for scene in scenes:
+                    print(scene)
+            else:
+                print("No scenes found.")
+            print("\n")
         else:
             print("Invalid act number " + str(selection))
 
@@ -76,7 +88,7 @@ def get_act_bounds(selection):
 
     return start, end
 
-def extract_between_acts(start_act, end_act=None):
+def extract_between_acts(start_act):
     global drama
     start_idx, end_idx = get_act_bounds(start_act)
     if start_idx is None:
@@ -96,12 +108,13 @@ def match_speaker(line, char_patterns):
                 return pat, remainder
     return None, None
 
+
 def count_utterance_words_in_act(act_number):
     global drama
     characters = Util.get_character_names(drama)
     utterances = extract_between_acts(act_number)
     if not utterances or not characters:
-        return 0, 0
+        return 0, 0, {}
 
     #sort character names longest to shortest, so that we can match longest names first
     char_patterns = sorted((c.upper().strip() for c in characters if c.strip()), key=len, reverse=True)
@@ -109,6 +122,7 @@ def count_utterance_words_in_act(act_number):
     current_speaker = None
     words = 0
     lines = 0
+    character_names_and_utterances = {}
 
     for raw in utterances:
         line = raw.strip()
@@ -133,16 +147,32 @@ def count_utterance_words_in_act(act_number):
         #check for speaker
         speaker, remainder = match_speaker(line, char_patterns)
         if speaker:
+            if speaker not in character_names_and_utterances:
+                character_names_and_utterances[speaker] = 0
             current_speaker = speaker
-            #if there's dialogue on the same line as the speaker name
+            # if there's dialogue on the same line as the speaker name
             if remainder:
+                character_names_and_utterances[current_speaker] += 1
                 lines += 1
                 words += len(remainder.split())
             continue
 
         #if we have a current speaker, this is a continuation line
         if current_speaker:
+            character_names_and_utterances[current_speaker] += 1
             lines += 1
             words += len(line.split())
 
-    return words, lines
+    return words, lines, character_names_and_utterances
+
+def get_scene_names(act_number):
+    global drama
+    scenes = []
+    start_idx, end_idx = get_act_bounds(act_number)
+    if start_idx is None:
+        return []
+    for i in range(start_idx, end_idx):
+        line = drama[i].strip()
+        if line.startswith("SCENE "):
+            scenes.append(line.split("SCENE ", 1)[1].strip())
+    return scenes
