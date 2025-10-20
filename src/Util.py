@@ -60,3 +60,10 @@ def convert_int_to_numerals(act_number):
         .replace("6", "VI")
         .replace("7", "VII")
     )
+
+def validate_drama(temp_drama):
+    if temp_drama is None or len(temp_drama) == 0:
+        print("Please import a drama first.")
+        return False
+    else:
+        return True

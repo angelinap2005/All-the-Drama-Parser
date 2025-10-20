@@ -2,6 +2,7 @@ import ImportDrama
 import GenerateReport
 import SaveReportToFile
 import ViewDetailsOfAct
+import SearchForUtterances
 
 drama = []
 
@@ -58,7 +59,7 @@ def menu():
             ViewDetailsOfAct.menu(drama)
             pass
         elif selection == "5":
-            # Handle option 5
+            SearchForUtterances.menu(drama)
             pass
         else:
             print("Error: Invalid option.")

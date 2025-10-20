@@ -3,18 +3,11 @@ import Util
 drama = []
 
 def menu(temp_drama):
-    success = validate_drama(temp_drama)
+    global drama
+    success = Util.validate_drama(temp_drama)
     if success:
-        get_act_from_drama()
-
-def validate_drama(temp_drama):
-    if temp_drama is None or len(temp_drama) == 0:
-        print("Please import a drama first.")
-        return False
-    else:
-        global drama
         drama = temp_drama
-        return True
+        get_act_from_drama()
 
 
 def get_act_from_drama():

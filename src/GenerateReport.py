@@ -3,18 +3,18 @@ import Util
 drama = []
 drama_reports = {}
 
-def menu(dramaTemp):
+def menu(drama_temp):
     global drama
-    check = check_file_loaded(dramaTemp)
+    check = check_file_loaded(drama_temp)
     if check:
-        drama = dramaTemp
+        drama = drama_temp
         print("Generating report...")
         generate_report()
 
 
-def check_file_loaded(dramaTemp):
+def check_file_loaded(drama_temp):
     #check if the user has loaded a file
-    if dramaTemp is None or len(dramaTemp) == 0:
+    if drama_temp is None or len(drama_temp) == 0:
         print("Please import a drama first.")
         return False
     else:
