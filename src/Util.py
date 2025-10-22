@@ -49,6 +49,41 @@ def find_number_of_acts(drama):
 
     return acts
 
+
+def find_number_of_scenes(drama, act):
+    if drama is None:
+        print("No drama loaded.")
+        return 0
+
+    total_acts = find_number_of_acts(drama)
+    if act < 1 or act > total_acts:
+        print(f"Invalid act number. Must be between 1 and {total_acts}.")
+        return 0
+
+    scenes = 0
+    in_target_act = False
+    act_numeral = convert_int_to_numerals(act)
+    target_act = f"ACT {act_numeral}"
+
+    for line in drama:
+        stripped_line = line.strip()
+
+        #enter target act
+        if stripped_line == target_act:
+            in_target_act = True
+            continue
+
+        #stop when it reaches the end of the target act
+        if in_target_act and stripped_line.startswith("ACT "):
+            break
+
+        #counts all scenes
+        if in_target_act and stripped_line.startswith("Scene "):
+            scenes += 1
+
+    return scenes
+
+
 def convert_int_to_numerals(act_number):
     return (
         str(act_number)
@@ -67,3 +102,55 @@ def validate_drama(temp_drama):
         return False
     else:
         return True
+
+def get_act_bounds(selection, drama):
+    numeral = convert_int_to_numerals(selection)
+    target = "ACT " + numeral
+
+    dramatis_idx = find_dramatis_index(drama)
+    search_start = dramatis_idx + 1 if dramatis_idx is not None else 0
+
+    start = None
+    for i in range(search_start, len(drama)):
+        line_stripped = drama[i].strip()
+        #look for "ACT X" on its own line (not in Contents)
+        if line_stripped == target:
+            start = i
+            break
+
+    if start is None:
+        return None, None
+
+    #find the end of the act
+    end = len(drama)
+    next_act_num = selection + 1
+    next_numeral = convert_int_to_numerals(next_act_num)
+    next_target = "ACT " + next_numeral
+
+    for j in range(start + 1, len(drama)):
+        line_stripped = drama[j].strip()
+        if line_stripped == next_target:
+            end = j
+            break
+
+    return start, end
+
+def get_act_scene_bounds(scene, act, drama):
+    start, end = get_act_bounds(act, drama)
+    if start is None:
+        return None, None
+    for i in range(start, end):
+        line_stripped = drama[i].strip()
+        if line_stripped.startswith("Scene "):
+            scene_numeral = line_stripped.split()[1]
+            if scene_numeral == scene:
+                return i, i + 1
+    return None, None
+
+def find_dramatis_index(drama):
+    if not drama:
+        return None
+    for i, line in enumerate(drama):
+        if line.strip() == "Dramatis Personæ":
+            return i
+    return None

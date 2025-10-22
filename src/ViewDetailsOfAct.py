@@ -39,51 +39,9 @@ def get_act_from_drama():
         else:
             print("Invalid act number " + str(selection))
 
-def find_dramatis_index():
-    global drama
-    if not drama:
-        return None
-    for i, line in enumerate(drama):
-        if line.strip() == "Dramatis Personæ":
-            return i
-    return None
-
-
-def get_act_bounds(selection):
-    numeral = Util.convert_int_to_numerals(selection)
-    target = "ACT " + numeral
-
-    dramatis_idx = find_dramatis_index()
-    search_start = dramatis_idx + 1 if dramatis_idx is not None else 0
-
-    start = None
-    for i in range(search_start, len(drama)):
-        line_stripped = drama[i].strip()
-        #look for "ACT X" on its own line (not in Contents)
-        if line_stripped == target:
-            start = i
-            break
-
-    if start is None:
-        return None, None
-
-    #find the end of the act
-    end = len(drama)
-    next_act_num = selection + 1
-    next_numeral = Util.convert_int_to_numerals(next_act_num)
-    next_target = "ACT " + next_numeral
-
-    for j in range(start + 1, len(drama)):
-        line_stripped = drama[j].strip()
-        if line_stripped == next_target:
-            end = j
-            break
-
-    return start, end
-
 def extract_between_acts(start_act):
     global drama
-    start_idx, end_idx = get_act_bounds(start_act)
+    start_idx, end_idx = Util.get_act_bounds(start_act, drama)
     if start_idx is None:
         return []
     #if end_act is specified, adjust end_idx accordingly
@@ -161,7 +119,7 @@ def count_utterance_words_in_act(act_number):
 def get_scene_names(act_number):
     global drama
     scenes = []
-    start_idx, end_idx = get_act_bounds(act_number)
+    start_idx, end_idx = Util.get_act_bounds(act_number, drama)
     if start_idx is None:
         return []
     for i in range(start_idx, end_idx):
