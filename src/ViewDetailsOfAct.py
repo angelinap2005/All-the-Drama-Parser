@@ -81,7 +81,7 @@ def count_utterance_words_in_act(act_number):
             continue
 
         #skip ACT and SCENE headers
-        if line.startswith("ACT ") or line.startswith("SCENE "):
+        if line.startswith("ACT ") or line.startswith("SCENE ") or line.startswith("Scene "):
             current_speaker = None
             continue
 

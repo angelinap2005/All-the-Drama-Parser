@@ -90,7 +90,7 @@ def top_20_words():
             for counter in range(len(words)):
                 count = words.count(words[counter])
                 top_words[words[counter]] = count
-        #sorts the dictonary in descending order
+        #sorts the dictionary in descending order
         top_words = dict(sorted(top_words.items(), key=lambda item: item[1], reverse=True))
 
     return top_words

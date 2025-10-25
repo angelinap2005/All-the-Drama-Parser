@@ -136,20 +136,46 @@ def get_act_bounds(selection, drama):
     return start, end
 
 def get_act_scene_bounds(scene, act, drama):
-    start, end = get_act_bounds(act, drama)
-    if start is None:
+    start_act, end_act = get_act_bounds(act, drama)
+    if start_act is None:
         return None, None
-    for i in range(start, end):
-        line_stripped = drama[i].strip()
-        if line_stripped.startswith("Scene "):
-            scene_numeral = line_stripped.split()[1]
-            if scene_numeral == scene:
-                return i, i + 1
-    return None, None
+
+    #convert act number to numerals for searching
+    scene_numeral = convert_int_to_numerals(scene)
+    target_scene = f"scene {scene_numeral}".lower()
+    next_scene_target = f"scene {convert_int_to_numerals(scene + 1)}".lower()
+
+    start_idx = None
+    #default end of scene to end of act
+    end_idx = end_act
+
+    for i in range(start_act, end_act):
+        stripped = drama[i].strip().lower()
+
+        #find start of scene
+        if stripped.startswith(target_scene):
+            after = stripped[len(target_scene):].lstrip()
+            if after.startswith('.'):
+                start_idx = i
+                continue
+
+        #if we're in a scene, find end of scene
+        if start_idx is not None and (
+            stripped.startswith(next_scene_target)
+            or stripped.startswith("act ")
+        ):
+            end_idx = i
+            break
+
+    if start_idx is None:
+        return None, None
+
+    return start_idx, end_idx
 
 def find_dramatis_index(drama):
     if not drama:
         return None
+    #looks for "Dramatis Personae" line
     for i, line in enumerate(drama):
         if line.strip() == "Dramatis Personæ":
             return i
