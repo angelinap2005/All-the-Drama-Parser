@@ -88,7 +88,7 @@ def search_first_and_last_utterance():
             utterances.append(stripped)
 
     if utterances:
-        print("First utterance:\n" + utterances[0])
+        print("\nFirst utterance:\n" + utterances[0])
         print("Last utterance:\n" + utterances[-1])
         print("\n")
     else:

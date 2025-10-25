@@ -33,15 +33,16 @@ def generate_report():
         print("Number of acts: " + str(num_acts))
         print("Number of scenes: " + str(num_scenes))
         print("Top 20 words:")
-        for counter in range(20):
-            top_20_words_list = top_20_words()
-            print(str(counter + 1) + ". " + list(top_20_words().keys())[counter] + " - " + str(
-                list(top_20_words().values())[counter]) + " time(s)")
+        top_20 = top_20_words()
+        for i, (word, freq) in enumerate(top_20.items()):
+            if i >= 20:
+                break
+            print(f"{i + 1}. {word} - {freq} time(s)")
         print("Character names: ")
         characters = Util.get_character_names(drama)
         for character in characters:
             print("-- " + character)
-        save_report(num_acts, num_scenes, top_20_words_list, characters)
+        save_report(num_acts, num_scenes, top_20, characters)
     except IndexError:
         print("Error while generating report.")
         return
@@ -70,30 +71,39 @@ def find_number_of_scenes():
 
 def top_20_words():
     global drama
-    if drama is None:
+    if not drama:
         print("No drama loaded.")
-        return 0
-    #dictonary to store top 20 words and their counts
-    top_words = {}
-    in_contents_section = False
+        return {}
+
+    word_counts = {}
+    in_dialogue = False
+
     for line in drama:
-        stripped_line = line.strip()
-        #checks for contents section
-        if stripped_line == "Dramatis Personæ":
-            in_contents_section = True
+        stripped = line.strip()
+
+        #start counting after Dramatis Personæ
+        if stripped == "Dramatis Personæ":
+            in_dialogue = True
             continue
-        if stripped_line == "[_Exit._]":
+
+        #stop when reaching Project Gutenberg footer
+        if "*** END OF THE PROJECT GUTENBERG EBOOK" in stripped:
             break
 
-        if in_contents_section:
-            words = stripped_line.split()
-            for counter in range(len(words)):
-                count = words.count(words[counter])
-                top_words[words[counter]] = count
-        #sorts the dictionary in descending order
-        top_words = dict(sorted(top_words.items(), key=lambda item: item[1], reverse=True))
+        #skip non-dialogue content
+        if not in_dialogue or stripped.startswith(("ACT ", "Scene ", "[", "Enter", "Exit")):
+            continue
 
-    return top_words
+        #count words
+        for word in stripped.split():
+            clean = word.strip(".,;:!?\"'()[]").lower()
+            if clean:
+                word_counts[clean] = word_counts.get(clean, 0) + 1
+
+    #sort descending
+    top_20 = dict(sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:20])
+    return top_20
+
 
 
 def get_drama_title():
