@@ -1,29 +1,52 @@
 def get_character_names(drama):
-    if drama is None or len(drama) == 0:
+    if not drama:
         return []
 
     characters = []
     in_dramatis_section = False
 
     for line in drama:
-        stripped_line = line.strip()
+        stripped = line.strip()
 
-        #checks for dramatis personae section
-        if "Dramatis Personæ" in stripped_line:
+        #find the start of the dramatis section
+        if "Dramatis Personæ" in stripped or "Dramatis Personae" in stripped:
             in_dramatis_section = True
             continue
-        #stops when it reaches the end of the characters section
-        if stripped_line.startswith("SCENE:"):
+        #stop when it reaches the end of the dramatis section
+        if in_dramatis_section and (
+            stripped.startswith("SCENE")
+            or stripped.startswith("Scene")
+            or stripped.startswith("ACT")
+            or stripped.startswith("THE PROLOGUE")
+        ):
             break
 
-        if in_dramatis_section and len(stripped_line) > 0:
-            if not any(c.isupper() for c in stripped_line[:3]):
-                continue
+        if not in_dramatis_section:
+            continue
 
-            if ',' in stripped_line:
-                name = stripped_line.split(',')[0].strip()
-                characters.append(name)
-
+        if not stripped:
+            continue
+        #remove punctuation
+        clean = stripped.strip(".;:, ")
+        if (
+            #clean words to ignore
+            clean.lower().startswith(("page to", "servant", "servants", "citizens", "maskers", "guards", "watchmen"))
+            or "attendants" in clean.lower()
+            or "citizen" in clean.lower()
+            or "officer" in clean.lower()
+            or "musician" in clean.lower()
+        ):
+            continue
+        for sep in [",", ";", "."]:
+            #remove any punctuation from the end of the word
+            if sep in clean:
+                clean = clean.split(sep)[0].strip()
+                break
+        if clean and (clean.isupper() or clean.istitle()):
+            #add character to list if it's not already there
+            characters.append(clean)
+    #remove duplicates while preserving order
+    characters = list(dict.fromkeys(characters))
     return characters
 
 def find_number_of_acts(drama):

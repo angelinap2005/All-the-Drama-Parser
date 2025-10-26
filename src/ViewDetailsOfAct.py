@@ -38,6 +38,8 @@ def get_act_from_drama():
             print("\n")
         else:
             print("Invalid act number " + str(selection))
+    else:
+        print("Invalid input. Please try again.")
 
 def extract_between_acts(start_act):
     global drama

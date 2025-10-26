@@ -10,9 +10,11 @@ def menu(drama_temp):
     success = Util.validate_drama(drama_temp)
     if success:
         drama = drama_temp
-    if prompt_for_scene_and_act():
-        search_for_words_or_phrases()
-        search_first_and_last_utterance()
+        if prompt_for_scene_and_act():
+            search_for_words_or_phrases()
+            search_first_and_last_utterance()
+        else:
+            print("Please enter valid scene and act numbers.")
     else:
         print("Please enter a valid scene and act number.")
 
