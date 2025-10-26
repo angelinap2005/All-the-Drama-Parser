@@ -120,12 +120,11 @@ def get_drama_title():
             if len(parts) > 1:
                 return parts[1].strip()
 
-    #fallback: look for "Title:" line
     for i, line in enumerate(drama):
         if line.startswith("Title:"):
             return line.split("Title:", 1)[1].strip()
 
-    #last resort: return unknown drama title
+    #fallback if no title found
     return "Unknown Drama"
 
 
